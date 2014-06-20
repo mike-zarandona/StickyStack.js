@@ -2,10 +2,10 @@
 **********************************************************
 * StickyStack.js
 * 
-* Version:		v1.0
+* Version:        v1.1.1
 * Author:		Mike Zarandona
-* Release:		March 27 2014
-* 				Initial release.
+* Release:		June 03 2014
+* 				Added data-scrollto for section scrolling
 * 
 * Reqs:			jQuery
 * 
@@ -24,11 +24,11 @@
 		options = $.extend({}, $.fn.stickyStack.options, options);
 
 		// Variables setup
-		var $sections = $(options.containerElement + ' > ' + options.stackingElement);
-		var sectionsInfo = [];
+		var $sections = $(options.containerElement + ' > ' + options.stackingElement),
+			sectionsInfo = [],
 
 		// Build the styles
-		var styles = 
+			styles = 
 				options.stackingElement + '{' +
 					'box-sizing: border-box;' +
 					'-moz-box-sizing: border-box;' +
@@ -54,15 +54,7 @@
 		// Document ready()
 		$(document).ready(function() {
 
-			// Build an array of the sections
-			//		sectionsInfo[i][0] = Position from top of document
-			//		sectionsInfo[i][1] = Height of section
-			for (var i = 0; i < $sections.length; i++) {
-				sectionsInfo[i] = [];
-
-				sectionsInfo[i][0] = $sections.eq(i).offset().top;
-				sectionsInfo[i][1] = $sections.eq(i).outerHeight(true);
-			}
+			buildSectionsInfo();
 
 			// Fix the section width
 			var origWidth = $sections.eq(0).outerWidth(true);
@@ -75,10 +67,10 @@
 		$(window).on('scroll', function() {
 
 			// Current scroll position
-			var windowScrollPos = $(window).scrollTop();
+			var windowScrollPos = $(window).scrollTop(),
 
 			// Counter variable
-			var counter = 0;
+				counter = 0;
 
 			// Count how many sections should be stuck
 			for (var t = 0; t < $sections.length; t++) {
@@ -95,6 +87,8 @@
 		// Resize event to keep the site width fluid
 		$(window).on('resize', function() {
 			$sections.css('width', $(options.containerElement).width() + 'px');
+
+			buildSectionsInfo();
 		});
 
 
@@ -125,6 +119,40 @@
 			}
 		}
 
+
+
+		// Helper function which builds the array sectionsInfo[] which keeps track of all the section elements
+		function buildSectionsInfo() {
+			// Build an array of the sections
+			//		sectionsInfo[i][0] = Position from top of document
+			//		sectionsInfo[i][1] = Height of section
+			var runningHeightCounter = 0;
+
+			for (var i = 0; i < $sections.length; i++) {
+				sectionsInfo[i] = [];
+
+				// record the height of the section
+				sectionsInfo[i][1] = $sections.eq(i).outerHeight(true);
+
+				// write the data-scrollto
+				$sections.eq(i).attr('data-scrollto', $sections.eq(i).offset().top);
+
+				// if the section is stuck, calculate its .offset() based on preceeding section heights
+				if ( $sections.eq(i).hasClass('stuck') ) {
+					sectionsInfo[i][0] = runningHeightCounter;
+					runningHeightCounter += sectionsInfo[i][1];
+				}
+				else {
+					sectionsInfo[i][0] = $sections.eq(i).offset().top;
+				}
+
+				// Attach a data attribute to be used to scroll to sections
+				$sections.eq(i).attr('data-scrollto', sectionsInfo[i][0]);
+				$sections.eq(i).attr('data-height', sectionsInfo[i][1]);
+			}
+			console.log(runningHeightCounter);
+		}
+
 	};
 
 
@@ -133,6 +161,6 @@
 	$.fn.stickyStack.options = {
 		containerElement:	'.main-content-wrapper',
 		stackingElement:	'section',
-		boxShadow:			'0 -3px 20px rgba(0, 0, 0, 0.25)'
+		boxShadow:		'0 -3px 20px rgba(0, 0, 0, 0.25)'
 	};
 })(jQuery);
