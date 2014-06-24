@@ -2,10 +2,10 @@
 **********************************************************
 * StickyStack.js
 * 
-* Version:        v1.1.1
+* Version:		v1.1.2
 * Author:		Mike Zarandona
-* Release:		June 03 2014
-* 				Added data-scrollto for section scrolling
+* Release:		June 24 2014
+* 				Added a fix for sections that are taller than the screen
 * 
 * Reqs:			jQuery
 * 
@@ -44,10 +44,15 @@
 
 				options.stackingElement + '.stuck + ' + options.stackingElement + ':not(.stuck) {' +
 					'box-shadow: ' + options.boxShadow + ';' +
+				'}' +
+
+				options.stackingElement + '.stuck.align-bottom {' +
+					'top: auto !important;' +
+					'bottom: 0 !important;' +
 				'}';
 
 		// Append the styles to the <head>
-		$('head').append('<style type="text/css">' + styles + '</style>');
+		$('head').append('<style id="sticky-stack-styles" type="text/css">' + styles + '</style>');
 
 
 
@@ -74,8 +79,16 @@
 
 			// Count how many sections should be stuck
 			for (var t = 0; t < $sections.length; t++) {
-				if ( windowScrollPos >= sectionsInfo[t][0] ) {
-					counter++;
+				// if this section has an offset, use that instead
+				if ( $sections.eq(t).attr('data-offset') != 0 ) {
+					if ( windowScrollPos >= sectionsInfo[t][2] + sectionsInfo[t][0] ) {
+						counter++;
+					}
+				}
+				else {
+					if ( windowScrollPos >= sectionsInfo[t][0] ) {
+						counter++;
+					}
 				}
 			}
 
@@ -126,13 +139,25 @@
 			// Build an array of the sections
 			//		sectionsInfo[i][0] = Position from top of document
 			//		sectionsInfo[i][1] = Height of section
-			var runningHeightCounter = 0;
+			//		sectionsInfo[i][2] = Scroll offset (if taller than viewport)
+			var runningHeightCounter = 0,
+				viewportHeight = $(window).outerHeight(true);
 
 			for (var i = 0; i < $sections.length; i++) {
 				sectionsInfo[i] = [];
 
 				// record the height of the section
 				sectionsInfo[i][1] = $sections.eq(i).outerHeight(true);
+
+				// test this section height against viewport
+				if ( sectionsInfo[i][1] > viewportHeight ) {
+					sectionsInfo[i][2] = sectionsInfo[i][1] - viewportHeight;
+					$sections.eq(i).addClass('align-bottom');
+				}
+				else {
+					sectionsInfo[i][2] = 0;
+					$sections.eq(i).removeClass('align-bottom');
+				}
 
 				// write the data-scrollto
 				$sections.eq(i).attr('data-scrollto', $sections.eq(i).offset().top);
@@ -146,11 +171,13 @@
 					sectionsInfo[i][0] = $sections.eq(i).offset().top;
 				}
 
-				// Attach a data attribute to be used to scroll to sections
-				$sections.eq(i).attr('data-scrollto', sectionsInfo[i][0]);
-				$sections.eq(i).attr('data-height', sectionsInfo[i][1]);
+				// Attach data attributes
+				$sections.eq(i)
+					.attr('data-scrollto', sectionsInfo[i][0])
+					.attr('data-height', sectionsInfo[i][1])
+					.attr('data-offset', sectionsInfo[i][2]);
+
 			}
-			console.log(runningHeightCounter);
 		}
 
 	};
@@ -161,6 +188,6 @@
 	$.fn.stickyStack.options = {
 		containerElement:	'.main-content-wrapper',
 		stackingElement:	'section',
-		boxShadow:		'0 -3px 20px rgba(0, 0, 0, 0.25)'
+		boxShadow:			'0 -3px 20px rgba(0, 0, 0, 0.25)'
 	};
 })(jQuery);
