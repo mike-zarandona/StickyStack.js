@@ -3,7 +3,7 @@ StickyStack.js
 
 A jQuery plugin that creates a stacking effect by sticking panels as they reach the top of the viewport.
 
-Check out the demo here: &nbsp;[http://mikezarandona.com/stickystack](http://mikezarandona.com/stickystack)
+Check out the demo here: &nbsp;[http://mike.zarandona.com/showed/stickystack](http://mike.zarandona.com/showed/stickystack)
 
 &nbsp;
 ## Requirements
@@ -35,4 +35,4 @@ First include jQuery, then call `.stickyStack()` on the main content wrapper (or
 
 &nbsp;
 ## Credits
-Made by [Mike Zarandona](http://twitter.com/mikezarandona) with inspiration from Matthew Peach at [DynamiX](http://dynamixwd.com)
+Made by [Mike Zarandona](http://twitter.com/mikezarandona) with inspiration from Matthew Peach.
