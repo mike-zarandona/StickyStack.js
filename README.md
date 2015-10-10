@@ -23,7 +23,7 @@ First include jQuery, then call `.stickyStack()` on the main content wrapper (or
 		$('.main-content-wrapper').stickyStack({
 			containerElement: '.main-content-wrapper',
 			stackingElement: 'section',
-			boxShadow: ''0 -3px 20px rgba(0, 0, 0, 0.25)'
+			boxShadow: '0 -3px 20px rgba(0, 0, 0, 0.25)'
 		});
 
 **containerElement** The selector which contains the elements to be stacked.
@@ -31,6 +31,11 @@ First include jQuery, then call `.stickyStack()` on the main content wrapper (or
 **stackingElement** The element(s) (which are direct children of `containerElement`) to be stacked on scroll.
 
 **boxShadow** CSS property of the shadow applied to the first un-stuck `stackingElement`.
+
+
+&nbsp;
+## StickyStack.js in the Wild
+Have you used StickyStack.js on a project or site?  I'd love to see it!  [Send me an email](mailto:mike.zarandona@gmail.com?subject=StickyStack.js%20in%20the%20Wild).
 
 
 &nbsp;
